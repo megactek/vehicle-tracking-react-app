@@ -42,5 +42,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3001/api"
+  "proxy": "https://vehicle-tracking-node-server.vercel.app/api"
 }
