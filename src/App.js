@@ -32,10 +32,8 @@ function App() {
   function checkDriverTrip() {
     return trucks?.find((truck) => truck.userId === currentUser?._id);
   }
-
   useEffect(() => {
-    socket.current = io("ws://vehicle-tracking-node-server.vercel.app");
-
+    socket.current = io("ws://4.tcp.eu.ngrok.io:13762");
     socket.current?.on("newCoord", ({ truckId, lat, long }) => {
       const getTruck = trucks?.find((truck) => truck._id === truckId);
       getTruck && setNewLocation({ ...getTruck, long: long, lat: lat });

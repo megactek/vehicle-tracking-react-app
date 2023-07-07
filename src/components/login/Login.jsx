@@ -35,12 +35,12 @@ const Login = ({ setShowLogin, myStorage, setCurrentUser }) => {
   return (
     <div className="loginContainer">
       <div className="logo">
-        <Room /> Vehicle Tracking
+        <Room /> Location Tracking
       </div>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="email" ref={nameRef} />
         <input type="password" placeholder="password" ref={passwordRef} />
-        <button className="loginButton" disabled={loading} type="button">
+        <button className="loginButton" disabled={loading} type="submit">
           {loading ? "loading..." : "Login"}
         </button>
         {failure && <span className="failure">Something went wrong!</span>}

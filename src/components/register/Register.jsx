@@ -39,7 +39,7 @@ const Register = ({ setShowRegister }) => {
   return (
     <div className="registerContainer">
       <div className="logo">
-        <Room /> MegacPin
+        <Room /> Location Tracking
       </div>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="username" ref={nameRef} />
@@ -52,7 +52,7 @@ const Register = ({ setShowRegister }) => {
           <option value="manager">Manager</option>
         </select>
         <input type="password" placeholder="password" ref={passwordRef} />
-        <button className="registerButton" type="button" disabled={loading}>
+        <button className="registerButton" type="submit" disabled={loading}>
           {loading ? "loading..." : "Register"}
         </button>
         {success && <span className="success">Successful, You can login now!</span>}
