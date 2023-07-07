@@ -34,7 +34,7 @@ function App() {
   }
 
   useEffect(() => {
-    socket.current = io("ws://localhost:3002");
+    socket.current = io("ws://https://vehicle-tracking-node-server.vercel.app");
 
     socket.current?.on("newCoord", ({ truckId, lat, long }) => {
       const getTruck = trucks?.find((truck) => truck._id === truckId);
