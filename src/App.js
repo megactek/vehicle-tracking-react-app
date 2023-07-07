@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
 import { LocalShipping, Search } from "@material-ui/icons";
-import "./app.css";
+import "./style.css";
 import axios from "axios";
 import { format } from "timeago.js";
 import Register from "./components/register/Register";
