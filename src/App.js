@@ -33,7 +33,7 @@ function App() {
     return trucks?.find((truck) => truck.userId === currentUser?._id);
   }
   useEffect(() => {
-    socket.current = io("ws://6961-88-202-99-134.ngrok-free.app");
+    socket.current = io.connect("https://6961-88-202-99-134.ngrok-free.app");
     socket.current?.on("newCoord", ({ truckId, lat, long }) => {
       const getTruck = trucks?.find((truck) => truck._id === truckId);
       getTruck && setNewLocation({ ...getTruck, long: long, lat: lat });
