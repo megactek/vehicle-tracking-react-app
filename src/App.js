@@ -33,7 +33,7 @@ function App() {
     return trucks?.find((truck) => truck.userId === currentUser?._id);
   }
   useEffect(() => {
-    socket.current = io("ws://4.tcp.eu.ngrok.io:13762");
+    socket.current = io("ws://6961-88-202-99-134.ngrok-free.app");
     socket.current?.on("newCoord", ({ truckId, lat, long }) => {
       const getTruck = trucks?.find((truck) => truck._id === truckId);
       getTruck && setNewLocation({ ...getTruck, long: long, lat: lat });
@@ -43,7 +43,9 @@ function App() {
 
     async function getTrucks() {
       try {
-        const res = await axios.get(process.env.REACT_APP_PROXY + "/trucks");
+        const res = await axios.get(process.env.REACT_APP_PROXY + "/trucks", {
+          headers: { "ngrok-skip-browser-warning": true },
+        });
         setTrucks(res.data);
       } catch (err) {
         console.log(err);
@@ -130,7 +132,9 @@ function App() {
     const source = axios.CancelToken.source();
     async function getDrivers() {
       try {
-        const res = await axios.get(process.env.REACT_APP_PROXY + "/users/drivers");
+        const res = await axios.get(process.env.REACT_APP_PROXY + "/users/drivers", {
+          headers: { "ngrok-skip-browser-warning": true },
+        });
         setDrivers(res.data);
       } catch (err) {
         console.log(err);
