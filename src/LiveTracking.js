@@ -1,4 +1,4 @@
-export const startLocationTracking = (onLocationChange, onError) => {
+export function startLocationTracking(onLocationChange, onError) {
   if (navigator.geolocation) {
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
@@ -19,4 +19,4 @@ export const startLocationTracking = (onLocationChange, onError) => {
     onError(new Error("Geolocation is not supported"));
     return () => {};
   }
-};
+}
