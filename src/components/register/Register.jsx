@@ -25,7 +25,7 @@ const Register = ({ setShowRegister }) => {
     };
 
     try {
-      const res = await axios.post("/users/register", newUser);
+      const res = await axios.post(process.env.REACT_APP_PROXY + "/users/register", newUser);
       setFailure(false);
       setSuccess(true);
       setTimeout(() => {

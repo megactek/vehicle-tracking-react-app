@@ -45,7 +45,7 @@ function App() {
 
     async function getTrucks() {
       try {
-        const res = await axios.get("/trucks");
+        const res = await axios.get(process.env.REACT_APP_PROXY + "/trucks");
         setTrucks(res.data);
       } catch (err) {
         console.log(err);
@@ -100,7 +100,10 @@ function App() {
     const source = axios.CancelToken.source();
     async function updateLocation(truck, data) {
       try {
-        const res = await axios.put("/trucks/" + truck._id, { lat: data.latitude, long: data.longitude });
+        const res = await axios.put(process.env.REACT_APP_PROXY + "/trucks/" + truck._id, {
+          lat: data.latitude,
+          long: data.longitude,
+        });
         setTrucks([...trucks, res.data]);
       } catch (err) {
         console.log(err);
@@ -129,7 +132,7 @@ function App() {
     const source = axios.CancelToken.source();
     async function getDrivers() {
       try {
-        const res = await axios.get("/users/drivers");
+        const res = await axios.get(process.env.REACT_APP_PROXY + "/users/drivers");
         setDrivers(res.data);
       } catch (err) {
         console.log(err);
@@ -165,7 +168,7 @@ function App() {
       lat: newPlace.lat,
     };
     try {
-      const res = await axios.post("/trucks", newTruck);
+      const res = await axios.post(process.env.REACT_APP_PROXY + "/trucks", newTruck);
       socket.current?.emit("deleteCoord");
       if (res.status === 201) {
         setTrucks([...trucks, res.data]);
@@ -190,7 +193,7 @@ function App() {
   async function handleDeleteTruck(truckId) {
     setLoading(true);
     try {
-      const res = await axios.delete(`/trucks/${truckId}`);
+      const res = await axios.delete(`${process.env.REACT_APP_PROXY}/trucks/${truckId}`);
       setTrucks(res.data);
       setViewState({ ...viewState, longitude: 6.5227044, latitude: 3.6217802 });
       socket.current?.emit("deleteCoord", () => {});

@@ -16,7 +16,7 @@ const Login = ({ setShowLogin, myStorage, setCurrentUser }) => {
       password: passwordRef.current.value,
     };
     try {
-      const res = await axios.post("/users/login", newUser);
+      const res = await axios.post(process.env.REACT_APP_PROXY + "/users/login", newUser);
       if (res.status === 200) {
         setFailure(false);
         myStorage.setItem("user", JSON.stringify(res.data));
