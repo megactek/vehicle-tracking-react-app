@@ -45,17 +45,21 @@ function App() {
 
     async function getTrucks() {
       try {
-        const res = await axios.get(process.env.REACT_APP_PROXY + "/trucks", {
-          headers: { "ngrok-skip-browser-warning": true },
-        });
+        const res = await axios.get(process.env.REACT_APP_PROXY + "/trucks");
         setTrucks(res.data);
       } catch (err) {
         console.log(err);
       }
     }
-
-    socket.current?.on("refreshCoord", () => {
+    socket.current?.on("setOnlineUsers", (socketUsers) => {
       getTrucks();
+      const updatedTrucks = trucks.map((truck) => {
+        const truckToUpdate = socketUsers.some((u) => truck.userId === u.userId);
+        if (truckToUpdate) return { ...truck, online: true };
+        return { ...truck, online: false };
+      });
+
+      setTrucks(updatedTrucks);
     });
 
     getTrucks();
@@ -68,7 +72,6 @@ function App() {
   useEffect(() => {
     if (newLocation) {
       const oldTrucks = trucks.filter((truck) => {
-        console.log(truck._id, newLocation._id);
         return truck._id !== newLocation._id;
       });
       setTrucks([...oldTrucks, newLocation]);
@@ -101,6 +104,12 @@ function App() {
       cleanup();
     };
   }, []);
+
+  useEffect(() => {
+    if (currentUser?.accountType === "driver") {
+      socket.current?.emit("addUser", currentUser?._id);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -241,14 +250,17 @@ function App() {
                 offsetLeft={-viewState.zoom * 3.5}
                 offsetTop={-viewState.zoom * 7}
               >
-                <LocalShipping
-                  style={{
-                    fontSize: viewState.zoom * 7,
-                    color: p?.username === currentUser ? "tomato" : "slateblue",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleMarkerClick(p?._id, p?.lat, p?.long)}
-                />
+                <div className="truck__icon">
+                  <LocalShipping
+                    style={{
+                      fontSize: viewState.zoom * 7,
+                      color: p?.username === currentUser ? "tomato" : "slateblue",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleMarkerClick(p?._id, p?.lat, p?.long)}
+                  />
+                  {p?.online && <span className="online"></span>}
+                </div>
               </Marker>
               {p?._id === currentPlaceId && (
                 <Popup
