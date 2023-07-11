@@ -187,3 +187,16 @@ textarea::placeholder {
     background-color: tomato;
     margin: 0 9px;
 }
+
+.truck__icon {
+    position: relative;
+}
+
+.truck__icon .online {
+    position: absolute;
+    background: lightgreen;
+    border-radius: 50%;
+    padding: 6px;
+    top: 0;
+    right: 5px;
+}
