@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
-import { LocalShipping, Search } from "@material-ui/icons";
+import { LocalShipping, Search, PersonPin, MyLocation } from "@material-ui/icons";
 import "./style.css";
 import axios from "axios";
 import { format } from "timeago.js";
@@ -16,8 +16,9 @@ function App() {
   const [viewState, setViewState] = useState({ zoom: 3.5 });
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [showSelfLocation, setShowSelfLocation] = useState(false);
   const [trucks, setTrucks] = useState([]);
+  const [selfLocation, setSelfLocation] = useState(null);
   const socket = useRef();
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
@@ -32,8 +33,9 @@ function App() {
   function checkDriverTrip() {
     return trucks?.find((truck) => truck.userId === currentUser?._id);
   }
+
   useEffect(() => {
-    socket.current = io.connect("https://websocket-server-g6bb.onrender.com");
+    socket.current = io.connect(process.env.REACT_APP_SOCKET_URL);
     socket.current?.on("newCoord", ({ truckId, lat, long }) => {
       const getTruck = trucks?.find((truck) => truck._id === truckId);
       getTruck && setNewLocation({ ...getTruck, long: long, lat: lat });
@@ -65,7 +67,10 @@ function App() {
 
   useEffect(() => {
     if (newLocation) {
-      const oldTrucks = trucks.filter((truck) => truck._id !== newLocation._id);
+      const oldTrucks = trucks.filter((truck) => {
+        console.log(truck._id, newLocation._id);
+        return truck._id !== newLocation._id;
+      });
       setTrucks([...oldTrucks, newLocation]);
     }
     return () => {
@@ -74,9 +79,9 @@ function App() {
   }, [newLocation]);
 
   function handleFindTruck() {
-    const truckToFind = trucks?.find((truck) => truck._id === findTruck);
+    const truckToFind = trucks?.find((truck) => truck.vehicleId === findTruck);
     if (truckToFind) {
-      setViewState({ long: truckToFind.long, lat: truckToFind.lat });
+      setViewState({ longitude: truckToFind.long, latitude: truckToFind.lat });
       return;
     }
     alert("Truck not found");
@@ -86,6 +91,7 @@ function App() {
     const cleanup = startLocationTracking(
       ({ latitude, longitude }) => {
         setLocation({ ...location, latitude: latitude, longitude: longitude });
+        setSelfLocation({ latitude, longitude });
       },
       (error) => {
         console.error("Error getting location:", error);
@@ -124,8 +130,10 @@ function App() {
   }, [currentUser, location]);
 
   const handleMarkerClick = (id, lat, long) => {
-    setCurrentPlaceId(id);
-    setViewState({ ...viewState, latitude: lat, longitude: long });
+    if (currentUser) {
+      setCurrentPlaceId(id);
+      setViewState({ ...viewState, latitude: lat, longitude: long });
+    }
   };
 
   useEffect(() => {
@@ -216,6 +224,14 @@ function App() {
         onDblClick={handleAddClick}
         transitionDuration={200}
       >
+        {showSelfLocation && (
+          <Marker latitude={selfLocation?.latitude} longitude={selfLocation?.longitude} zoom={9}>
+            <div className="pin">
+              <p>You're here</p>
+              <PersonPin className="person__pin" style={{ fontSize: "50px", fontWeight: "bold" }} />
+            </div>
+          </Marker>
+        )}
         {trucks &&
           trucks?.map((p, i) => (
             <div key={i}>
@@ -248,6 +264,10 @@ function App() {
                     <h4 className="place">{p?.vehicleId}</h4>
                     <label>Description</label>
                     <p className="desc">{p?.desc}</p>
+                    <label>City</label>
+                    <p className="desc">{p?.city}</p>
+                    <label>Location</label>
+                    <p className="desc">{p?.location}</p>
                     <label>Driver</label>
                     <div className="stars">{getDriver(p?.userId)}</div>
                     <div className="detailsBottom">
@@ -316,6 +336,13 @@ function App() {
               </div>
             </div>
             <div className="top__left">
+              {currentUser?.accountType === "manager" && (
+                <MyLocation
+                  fontSize="20px"
+                  style={{ fontWeight: "bold", color: "darkolivegreen", cursor: "pointer" }}
+                  onClick={() => setShowSelfLocation(!showSelfLocation)}
+                />
+              )}
               <button className="button" onClick={handleLogout}>
                 Log out
               </button>
